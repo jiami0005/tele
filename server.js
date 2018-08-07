@@ -1,6 +1,6 @@
 const argv = require("optimist")
-            .usage("Usage: $0 --port [listen port]")
-            .demand(["port"])
+//            .usage("Usage: $0 --port [listen port]")
+  //          .demand(["port"])
             .argv;
 const socks5 = require("./lib");
 const telegarm = require("./telegram");
@@ -8,16 +8,16 @@ const telegarm = require("./telegram");
 const server = socks5.createServer();
 telegarm.loadIPList("./telegramip.txt");
 
-server.on("proxyConnect", function (info, targetSocket, clientSocket) {
+server.on("proxyConnect", function (info, socket) {
     var ip = info.host;
-    var log = `${clientSocket.remoteAddress} <-> ${ip}:${info.port}`;
+    var log = `${socket.remoteAddress} <-> ${ip}:${info.port}`;
     if (!isIP(ip)) {
-        targetSocket.destroy();
+        socket.destroy();
         console.log(log, "reject");
         return;
     }
     if (!telegarm.isTelegramIP(ip)) {
-        targetSocket.destroy();
+        socket.destroy();
         console.log(log, "reject");
         return;
     }
@@ -40,5 +40,5 @@ function isIP(str) {
     return true;
 }
 
-server.listen(argv.port);
-console.log(`Listening on port ${argv.port}.`);
+server.listen("1000");
+console.log(`listen port at ${argv.port}.`);
